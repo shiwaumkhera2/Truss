@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Truss marketing site
 
-## Getting Started
-
-First, run the development server:
+Next.js 14 (App Router) + TypeScript + Tailwind CSS + Framer Motion + Lenis. Deploys to Vercel with zero configuration.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev      # http://localhost:3000
+npm run build    # production build
+npm start        # serve the production build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Where things live
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Path | What it is |
+| --- | --- |
+| `content/site.ts` | Every string on the site: nav, hero, form copy, sections, footer, legal pages, mock-screen fixtures. Edit copy here, not in components. |
+| `app/layout.tsx` | Fonts (Instrument Serif via `next/font/google`, Geist via `next/font/local`), metadata, providers. |
+| `app/page.tsx` | The landing page: preloader, nav, and sections in order. |
+| `app/privacy/page.tsx`, `app/terms/page.tsx` | Minimal legal pages rendered by `components/LegalPage.tsx`. |
+| `app/api/lead/route.ts` | Receives the hero form. Validates, drops honeypot hits, then calls `lib/server/lead-delivery.ts`. |
+| `lib/server/lead-delivery.ts` | Logs leads today. Set env vars to forward them to a webhook or email via Resend (see `.env.example`). |
+| `lib/lead.ts` | Validation shared by the form and the API route. |
+| `app/globals.css`, `tailwind.config.ts` | Colour tokens (`--navy-900`, `--lime`, ...), fonts, easing, shadows, marquee keyframes. `--muted` (#6B7A90) is kept as specified; running text on light surfaces uses `--muted-text` (#5F6E85, Tailwind `text-secondary`) because the original fails WCAG AA below 24px. |
+| `components/motion/` | `Reveal`, `TextReveal`, `Parallax`, `CountUp`, `Magnetic`, `TiltCard`. |
+| `components/chrome/` | `Nav` (transparent to frosted), `Preloader`, `Footer`. |
+| `components/sections/` | Hero (with `HeroMedia`, `LeadForm`, `TrustedBy`, `ScrollCue`), Problem, Showcase, HowItWorks, TrustBand, Founders, FinalCta. |
+| `components/mocks/` | The in-app screens shown in the sticky product showcase. Fixture data comes from `site.mocks`. |
+| `components/providers/` | Lenis smooth scroll and anchor handling, Framer `MotionConfig` (reduced motion), preloader state. |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Drop-in assets
 
-## Learn More
+| Asset | Path | Notes |
+| --- | --- | --- |
+| Logo mark | `public/logo.svg` | Block "T" generated from the Titan One typeface: white fill, navy outline, rendered as an image. Set `site.logo.monochrome = true` to switch to a CSS-recoloured single-colour SVG instead. |
+| Favicon | `app/icon.svg` | Next.js picks this up automatically. |
+| Hero video | `public/video/hero.mp4` | Your `Homepage.MOV`, re-encoded to H.264 at 1280x720. Muted, looping, `playsInline`. |
+| Hero poster | `public/video/poster.jpg` | A frame from the video, shown before playback and used as the LCP image. |
+| Harvard mark | `public/logos/harvard.png` | Cropped from your upload. Update `width`/`height` in `site.founders.logos` if you swap it. |
+| TMD Remodeling mark | `public/logos/tmd.jpg` | Your upload, unchanged. Same rule as above. |
+| Founder portraits | `public/founders/shiwaum.jpg`, `public/founders/devan.jpg` | 512px square crops of your uploads. Swap the files or change `portrait` in `site.founders.people`. |
+| Customer logos | any path under `public/` | Add `src`, `width`, `height` to entries in `site.hero.trustedBy.logos`; otherwise the name renders as a wordmark. |
 
-To learn more about Next.js, take a look at the following resources:
+## Lead delivery
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Every submission is validated, checked against the honeypot, logged to the server console, and emailed to
+`LEAD_TO_EMAIL` (defaults to TrussHQ@gmail.com, the site contact email). Email needs one secret, set locally in
+`.env.local` and in Vercel under Settings > Environment Variables:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Gmail App Password (recommended).** In the TrussHQ Google Account turn on 2-Step Verification, open
+   Security > App passwords, create one named "Truss site", and set `GMAIL_USER=TrussHQ@gmail.com` and
+   `GMAIL_APP_PASSWORD=<the 16-character password>`. Leads arrive from the TrussHQ inbox to itself with the
+   visitor's address as reply-to.
+2. **Resend.** Set `RESEND_API_KEY` (and optionally `LEAD_FROM_EMAIL` once a domain is verified). Used only when
+   the Gmail variables are empty. Without a verified domain, Resend delivers only to the email the Resend account
+   was created with.
 
-## Deploy on Vercel
+`LEAD_WEBHOOK_URL` additionally POSTs each lead as JSON to a webhook. If a configured channel fails, the API
+returns 502 and the form shows its fallback contact details instead of a false success. With nothing configured,
+leads are only logged, and production logs a warning on every submission.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Motion and accessibility
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+All animation honours `prefers-reduced-motion`: Framer's `MotionConfig reducedMotion="user"` removes transforms, Lenis smoothing is disabled, the marquee stops, and the preloader lifts immediately. Magnetic and tilt effects only run on fine-pointer devices. The site uses the normal system cursor.

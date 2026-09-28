@@ -3,25 +3,103 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --navy-900: #071b36;
+  --navy-800: #0b2a52;
+  --navy-700: #12406f;
+  --lime: #e8ff6a;
+  --lime-hover: #dffa4f;
+  --white: #ffffff;
+  --off-white: #f6f7f9;
+  --ink: #0a0f1a;
+  --muted: #6b7a90;
+  /* Darker variant for running text on light surfaces: #6B7A90 measures ~4.1:1 on off-white, below AA. */
+  --muted-text: #5f6e85;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --nav-height: 80px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Lenis smooth-scroll base styles (inlined from lenis/dist/lenis.css) */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+.lenis.lenis-autoToggle {
+  transition-property: overflow;
+  transition-duration: 1ms;
+  transition-behavior: allow-discrete;
+}
+
+html {
+  /* relative so scroll-linked offsets (Framer Motion useScroll targets) measure against a positioned container */
+  position: relative;
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: auto;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--navy-900);
+  color: var(--ink);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: var(--lime);
+  color: var(--navy-900);
+}
+
+/* Focus: navy ring on light surfaces, lime ring on dark surfaces */
+:focus-visible {
+  outline: 2px solid var(--navy-700);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+[data-nav-theme="dark"] :focus-visible,
+[data-surface="dark"] :focus-visible {
+  outline-color: var(--lime);
+}
+
+/* Serif display defaults */
+.font-serif {
+  font-feature-settings: "kern" 1, "liga" 1;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  .mask-fade-x {
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+  }
+  .blueprint-grid {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
   }
 }
