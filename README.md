@@ -32,7 +32,8 @@ npm start        # serve the production build
 | Asset | Path | Notes |
 | --- | --- | --- |
 | Logo mark | `public/logo.svg` | Block "T" generated from the Titan One typeface: white fill, navy outline, rendered as an image. Set `site.logo.monochrome = true` to switch to a CSS-recoloured single-colour SVG instead. |
-| Favicon | `app/icon.svg` | Next.js picks this up automatically. |
+| Favicon | `app/icon.svg` | Next.js picks this up automatically. `app/apple-icon.png` is the iOS home-screen icon. |
+| Link preview image | `app/opengraph-image.png`, `app/twitter-image.png` | 1200x630 logo card shown when the link is shared in iMessage, WhatsApp, Slack, X, LinkedIn. Regenerate or replace with any 1200x630 PNG. Set `NEXT_PUBLIC_SITE_URL` in Vercel to your custom domain so the preview URL is absolute and correct. |
 | Hero video | `public/video/hero.mp4` | Your `Homepage.MOV`, re-encoded to H.264 at 1280x720. Muted, looping, `playsInline`. |
 | Hero poster | `public/video/poster.jpg` | A frame from the video, shown before playback and used as the LCP image. |
 | Harvard mark | `public/logos/harvard.png` | Cropped from your upload. Update `width`/`height` in `site.founders.logos` if you swap it. |

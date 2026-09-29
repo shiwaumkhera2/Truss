@@ -48,7 +48,6 @@ export type SubRow = { name: string; trade: string; insurance: StatusCell; waive
 
 export const site = {
   name: "Truss",
-  domain: "truss.example.com", // PLACEHOLDER: production domain, used for metadata and OpenGraph
   description:
     "Construction payroll in 30 minutes, built for compliance. Certified payroll, prevailing wage, and subcontractor management in one place.",
   contactEmail: "TrussHQ@gmail.com",
