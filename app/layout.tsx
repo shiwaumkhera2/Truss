@@ -31,6 +31,7 @@ function siteUrl(): URL {
   if (explicit) return new URL(explicit.startsWith("http") ? explicit : `https://${explicit}`);
   const vercel = process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
   if (vercel) return new URL(`https://${vercel}`);
+  if (process.env.NODE_ENV === "production") return new URL(`https://${site.domain}`);
   return new URL(`http://localhost:${process.env.PORT ?? 3000}`);
 }
 

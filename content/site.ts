@@ -48,6 +48,8 @@ export type SubRow = { name: string; trade: string; insurance: StatusCell; waive
 
 export const site = {
   name: "Truss",
+  /** Production domain, used for absolute link-preview URLs when no environment variable overrides it. */
+  domain: "trusspayroll.com",
   description:
     "Construction payroll in 30 minutes, built for compliance. Certified payroll, prevailing wage, and subcontractor management in one place.",
   contactEmail: "TrussHQ@gmail.com",
